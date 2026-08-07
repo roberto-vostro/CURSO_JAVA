@@ -26,11 +26,11 @@ public class Cajero {
                 name = objUsuario.getName();
                 if(!objUsuario.isBlocked()){
                     System.out.println("Bienvenido/a " + name);
-                    //mainMenu();
+                    mainMenu();
                 }else {
                     System.out.println("¡" + name + " tu cuenta esta bloqueada!" + "\n" +
                             "Contacta a Soporte por favor");
-                    //systemExit();
+                    systemExit();
                 }
             }else{
                 System.out.println("Usuario no encontrado " + name);
