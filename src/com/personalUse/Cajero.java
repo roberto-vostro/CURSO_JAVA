@@ -1,5 +1,6 @@
 package com.personalUse;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Cajero {
@@ -10,40 +11,52 @@ public class Cajero {
     private int menuAttempts = 0, newBalance = 0, balance = 0, cash = 0;
 
 
+
     public Cajero(){
         System.out.println("=================================\n"+
                 "======¡INICIANDO SISTEMA!========\n"+
                 "=================================\n");
     }
+
     public void startCajero(){
-        String id, name = "";
-        int maxLoginAttempts = 3;
-        do{
-            loginAttempts++;
-            System.out.println("Ingresa tu ID de Banco:");
-            id = inData.next();
-            if(objUsuario.userValidate(id)){
-                name = objUsuario.getName();
-                if(!objUsuario.isBlocked()){
-                    System.out.println("Bienvenido/a " + name);
-                    mainMenu();
-                }else {
-                    System.out.println("¡" + name + " tu cuenta esta bloqueada!" + "\n" +
-                            "Contacta a Soporte por favor");
-                    systemExit();
+        try{
+            String id = "", name = "";
+            int maxLoginAttempts = 3;
+            do{
+                loginAttempts++;
+
+                if (name.isEmpty()){
+                    System.out.println("Ingresa tu ID de Banco:");
+                    id = inData.next();
+
+                    if(objUsuario.userValidate(id)){
+                        name = objUsuario.getName();
+                        System.out.println("Bienvenido/a " + name);
+                        if(!objUsuario.isBlocked()){
+                            mainMenu();
+                        }else {
+                            System.out.println("¡" + name + " tu cuenta esta bloqueada!" + "\n" +
+                                    "Contacta a Soporte por favor");
+                            systemExit();
+                        }
+                    }else{
+                        System.out.println("Usuario no encontrado " + name);
+                        if (loginAttempts == maxLoginAttempts){
+                            System.out.println("Máximo de reintentos superado ("+loginAttempts+")");
+                        }
+                    }
                 }
-            }else{
-                System.out.println("Usuario no encontrado " + name);
-                if (loginAttempts == maxLoginAttempts){
-                    System.out.println("Máximo de reintentos superado ("+loginAttempts+")");
-                }
-            }
-        }while (loginAttempts < maxLoginAttempts);
-    }
+            }while (loginAttempts < maxLoginAttempts);
+            transactionManage();
+        } catch (InputMismatchException e) {
+            System.out.println("Error: " + e);
+            inData.nextLine();
+        }
+    }//Fin metodo startCajero()
 
     void mainMenu(){
-        try {
-            do{
+        do{
+            try {
                 menuAttempts++;
                 System.out.println("Elige una opción:" + "\n" +
                         "     1.- Consultar Saldo" + "\n" +
@@ -59,11 +72,13 @@ public class Cajero {
                     case 4 -> systemExit();
                     default -> System.out.println("Opción incorrecta");
                 }
-            }while (menuAttempts < maxMenuAttempts);
-        }catch(Exception e){
-            System.out.println("Dato ingresado incorrecto\n" +
-                    "Error: " + e);
-        }
+            }catch(InputMismatchException e){
+                System.out.println("Dato ingresado incorrecto\n" +
+                        "Error: " + e + "\n");
+                inData.nextLine();
+            }
+        }while (menuAttempts < maxMenuAttempts);
+
     }
 
     void transactionManage(){
